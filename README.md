@@ -28,3 +28,6 @@ ATS Recruiter AI is a no-code applicant tracking and resume screening solution b
 - **OpenAI GPT-4** – Resume analysis and scoring
 - **PDF Parser (n8n Node)** – Text extraction from PDF files
 - **Integrations (Optional)** – Google Sheets, Email, Notion, Slack, etc.
+
+> ⚠️ **Please fork this repository before using or modifying it.**
+> Direct pushes or pull requests from cloned copies will not be accepted.
