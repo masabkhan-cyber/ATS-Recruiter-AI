@@ -31,3 +31,6 @@ ATS Recruiter AI is a no-code applicant tracking and resume screening solution b
 
 > ⚠️ **Please fork this repository before using or modifying it.**
 > Direct pushes or pull requests from cloned copies will not be accepted.
+
+
+![ATS Recruiter AI Demo](./screenshot.png)
