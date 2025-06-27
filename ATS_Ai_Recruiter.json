@@ -1,0 +1,637 @@
+{
+  "name": "ATS Ai Recruiter",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1NfgTr74uSYaeixno0gEWBJTG9sgM7JUC",
+          "mode": "list",
+          "cachedResultName": "N8N ATS",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1NfgTr74uSYaeixno0gEWBJTG9sgM7JUC"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -940,
+        -120
+      ],
+      "id": "2a628067-82ff-475b-b842-f366918331bb",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "c9vooDtqpKyuvl2u",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1NfgTr74uSYaeixno0gEWBJTG9sgM7JUC",
+            "mode": "list",
+            "cachedResultName": "N8N ATS",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1NfgTr74uSYaeixno0gEWBJTG9sgM7JUC"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -720,
+        -120
+      ],
+      "id": "c52085d9-a416-490a-b132-d5777186e4cb",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "c9vooDtqpKyuvl2u",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -280,
+        -320
+      ],
+      "id": "ad64b735-bdd7-439e-97f3-9de1c906b2bc",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "c9vooDtqpKyuvl2u",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "=data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        -320
+      ],
+      "id": "bbf392da-9720-4f08-ab38-853b11237d56",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=%QUESTIONS%\n{{ $json.data.map(item => item.Question + \" type:\" + item.Type) + \"\\n\" }}\n\n%USER PROFILE%\n{{ $('Extract from File').first().json.text }}\n\nAnalyze the %USER PROFILE% against the %QUESTIONS% mentioned in the context. Use only the questions mentioned in the %QUESTIONS% section",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        600,
+        -220
+      ],
+      "id": "25332c73-e715-4616-a3c3-2d016ed54306",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        624,
+        195
+      ],
+      "id": "bf6f9cfc-1592-4ed9-8695-92e7f9c13267",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "pfDeJllm1Rltu0Ch",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -500,
+        -120
+      ],
+      "id": "ac2f151f-8623-4dcb-ac65-8263b9606197",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1pzte96gZOu_9AhkiZZOe7Vt0CymJHMF4anAvFYw57qA",
+          "mode": "list",
+          "cachedResultName": "Recruiter AI Agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pzte96gZOu_9AhkiZZOe7Vt0CymJHMF4anAvFYw57qA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2102591387,
+          "mode": "list",
+          "cachedResultName": "Rubric",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pzte96gZOu_9AhkiZZOe7Vt0CymJHMF4anAvFYw57qA/edit#gid=2102591387"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -60,
+        -120
+      ],
+      "id": "0cf88ad1-56ca-4585-bd1b-bce62c05e571",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Tutf2s6sxR11uj5I",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        160,
+        -220
+      ],
+      "id": "6735bc88-e6aa-4556-947b-61491730d72c",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        380,
+        -220
+      ],
+      "id": "9222edd8-882c-4e46-a24b-b6ccb1548b57",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserAutofixing",
+      "typeVersion": 1,
+      "position": [
+        684,
+        0
+      ],
+      "id": "82acf9f1-1855-426e-a70c-83f6a1ef61c5",
+      "name": "Auto-fixing Output Parser"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"title\": \"Generated schema for Root\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"candidate_name\": {\n      \"type\": \"string\"\n    },\n    \"q1_question\": {\n      \"type\": \"string\"\n    },\n    \"q1_answer\": {\n      \"type\": \"string\"\n    },\n    \"q1_explanation\": {\n      \"type\": \"string\"\n    },\n    \"q2_question\": {\n      \"type\": \"string\"\n    },\n    \"q2_answer\": {\n      \"type\": \"string\"\n    },\n    \"q2_explanation\": {\n      \"type\": \"string\"\n    },\n    \"q3_question\": {\n      \"type\": \"string\"\n    },\n    \"q3_answer\": {\n      \"type\": \"string\"\n    },\n    \"q3_explanation\": {\n      \"type\": \"string\"\n    },\n    \"q4_question\": {\n      \"type\": \"string\"\n    },\n    \"q4_answer\": {\n      \"type\": \"string\"\n    },\n    \"q4_explanation\": {\n      \"type\": \"string\"\n    },\n    \"q5_question\": {\n      \"type\": \"string\"\n    },\n    \"q5_answer\": {\n      \"type\": \"string\"\n    },\n    \"q5_explanation\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\n    \"candidate_name\",\n    \"q1_question\",\n    \"q1_answer\",\n    \"q1_explanation\",\n    \"q2_question\",\n    \"q2_answer\",\n    \"q2_explanation\",\n    \"q3_question\",\n    \"q3_answer\",\n    \"q3_explanation\",\n    \"q4_question\",\n    \"q4_answer\",\n    \"q4_explanation\",\n    \"q5_question\",\n    \"q5_answer\",\n    \"q5_explanation\"\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        792,
+        195
+      ],
+      "id": "eaf583a4-1b89-4581-9331-9da5703efba0",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1pzte96gZOu_9AhkiZZOe7Vt0CymJHMF4anAvFYw57qA",
+          "mode": "list",
+          "cachedResultName": "Recruiter AI Agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pzte96gZOu_9AhkiZZOe7Vt0CymJHMF4anAvFYw57qA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Profiles",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pzte96gZOu_9AhkiZZOe7Vt0CymJHMF4anAvFYw57qA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "candidate_name": "={{ $json.output.candidate_name }}",
+            "q1_question": "={{ $json.output.q1_question }}",
+            "q1_answer": "={{ $json.output.q1_answer }}",
+            "q1_explaination": "={{ $json.output.q1_explanation }}",
+            "q2_question": "={{ $json.output.q2_question }}",
+            "q2_answer": "={{ $json.output.q2_answer }}",
+            "q2_explaination": "={{ $json.output.q2_explanation }}",
+            "q3_question": "={{ $json.output.q3_question }}",
+            "q3_answer": "={{ $json.output.q3_answer }}",
+            "q3_explaination": "={{ $json.output.q3_explanation }}",
+            "q4_question": "={{ $json.output.q4_question }}",
+            "q4_answer": "={{ $json.output.q4_answer }}",
+            "q4_explaination": "={{ $json.output.q4_explanation }}",
+            "q5_question": "={{ $json.output.q5_question }}",
+            "q5_answer": "={{ $json.output.q5_answer }}",
+            "q5_explaination": "={{ $json.output.q5_explanation }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "candidate_name",
+              "displayName": "candidate_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "q1_question",
+              "displayName": "q1_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "q1_answer",
+              "displayName": "q1_answer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "q1_explaination",
+              "displayName": "q1_explaination",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "q2_question",
+              "displayName": "q2_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "q2_answer",
+              "displayName": "q2_answer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "q2_explaination",
+              "displayName": "q2_explaination",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "q3_question",
+              "displayName": "q3_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "q3_answer",
+              "displayName": "q3_answer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "q3_explaination",
+              "displayName": "q3_explaination",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "q4_question",
+              "displayName": "q4_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "q4_answer",
+              "displayName": "q4_answer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "q4_explaination",
+              "displayName": "q4_explaination",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "q5_question",
+              "displayName": "q5_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "q5_answer",
+              "displayName": "q5_answer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "q5_explaination",
+              "displayName": "q5_explaination",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1060,
+        -46.25
+      ],
+      "id": "2e280c6d-b735-4438-b8af-0b12c1b9afc4",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Tutf2s6sxR11uj5I",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "ATS Recruiter App Designed By Masab Saleem Umar",
+        "height": 100,
+        "width": 150,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -960,
+        -320
+      ],
+      "typeVersion": 1,
+      "id": "37451e0b-f3cf-4355-b0e2-05b5825c2c86",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Auto-fixing Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto-fixing Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Auto-fixing Output Parser",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b5d6b972-ccc8-4571-a835-b2682b38b270",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ac352339d8d26f7543ad1a1917d6dde67b90c942daa703d930e8bd14e56e9a8e"
+  },
+  "id": "RVQ7PCszbUzWq8yw",
+  "tags": []
+}
